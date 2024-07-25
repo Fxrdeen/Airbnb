@@ -15,10 +15,16 @@ import Animated, { FadeInLeft, FadeInRight } from "react-native-reanimated";
 interface Props {
   listings: any[];
   category: string;
+  refresh: number;
 }
-const Listings = ({ category, listings: items }: Props) => {
+const Listings = ({ category, listings: items, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
   const listRef = useRef<FlatList>(null);
+  useEffect(() => {
+    if (refresh) {
+      listRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [refresh]);
   useEffect(() => {
     console.log("Reload listings", items.length);
     setLoading(true);
@@ -70,6 +76,9 @@ const Listings = ({ category, listings: items }: Props) => {
         ref={listRef}
         data={loading ? [] : items}
         renderItem={renderRow}
+        ListHeaderComponent={
+          <Text style={styles.info}>{items.length} Homes</Text>
+        }
       />
     </View>
   );
@@ -85,6 +94,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
     borderRadius: 10,
+  },
+  info: {
+    textAlign: "center",
+    fontFamily: "sans-serif",
+    fontSize: 16,
+    marginTop: 4,
   },
 });
 

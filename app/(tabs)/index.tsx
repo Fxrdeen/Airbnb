@@ -6,6 +6,7 @@ import { View, Text } from "react-native";
 import listingData from "@/assets/data/airbnb-listings.json";
 import ListingsMap from "@/components/ListingsMap";
 import ListingMapData from "@/assets/data/airbnb-listings.geo.json";
+import ListingsBottomSheet from "@/components/ListingsBottomSheet";
 const IndexPage = () => {
   const [category, setCategory] = useState("Tiny homes");
   const items = useMemo(() => listingData as any, []);
@@ -15,7 +16,7 @@ const IndexPage = () => {
   };
 
   return (
-    <View style={{ flex: 1, marginTop: 130 }}>
+    <View style={{ flex: 1, marginTop: 90 }}>
       <Stack.Screen
         options={{
           header: () => <ExploreHeader onCategoryChanged={onDataChange} />,
@@ -23,6 +24,7 @@ const IndexPage = () => {
       />
       {/* <Listings listings={items} category={category} /> */}
       <ListingsMap listing={ListingMapData} />
+      <ListingsBottomSheet listings={items} category={category} />
     </View>
   );
 };
