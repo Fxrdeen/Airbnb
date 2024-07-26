@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, Image } from "react-native";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import * as ImagePicker from "expo-image-picker";
 const Profile = () => {
   const { signOut, isSignedIn } = useAuth();
   const { user } = useUser();
@@ -22,10 +22,33 @@ const Profile = () => {
     setEmail(user.emailAddresses[0].emailAddress);
   }, [user]);
   const onSaveUser = async () => {
-    setEdit(false);
+    try {
+      if (!firstName || !lastName) return;
+      await user?.update({
+        firstName,
+        lastName,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setEdit(false);
+    }
   };
 
-  const onCaptureImage = async () => {};
+  const onCaptureImage = async () => {
+    const res = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.75,
+      base64: true,
+    });
+    if (!res.canceled) {
+      const base64 = `data:image/png;base64,${res.assets[0].base64}`;
+      user?.setProfileImage({
+        file: base64,
+      });
+    }
+  };
   return (
     <SafeAreaView style={defaultStyles.container}>
       <View>
@@ -132,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark,
   },
   editRow: {
-    height: 60,
+    height: 50,
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
